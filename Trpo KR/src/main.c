@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <conio.h>
 #include <stdbool.h>
 
 void printDescription()
@@ -8,7 +7,7 @@ void printDescription()
     printf("Из кучки, первоначально содержащей 100 спичек, два игрока поочередно берут по несколько спичек: не менее одной и не более десяти.\n");
     printf("Выигрывает тот, кто берет последнюю спичку.\n");
     printf("\nДля возврата в меню нажмите любую клавишу...");
-    getch();
+    getchar();
 }
 
 void game()
@@ -44,7 +43,7 @@ void game()
             }
         }
     } while (matchCount > 0);
-    getch();
+    getchar();
 }
 
 int main()
