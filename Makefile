@@ -1,29 +1,39 @@
 CC = gcc
+CFLAGS = -Wall -Wextra -Wpedantic
+LIBRARY = libmatches.a
+SRC_DIR = src
+OBJ_DIR = obj
+BUILD_DIR = build
 
-PREF_SRC = ./src/
-PREF_OBJ = ./obj/
-OUT_DIR = ./build
+LIB_SRC = $(SRC_DIR)/lib/matches_game.c
+MAIN_SRC = $(SRC_DIR)/main.c
 
-TARGET = $(OUT_DIR)/game
+LIB_OBJ = $(patsubst $(SRC_DIR)/lib/%.c,$(OBJ_DIR)/%.o,$(LIB_SRC))
+MAIN_OBJ = $(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR)/%.o,$(MAIN_SRC))
 
-SRC = $(wildcard $(PREF_SRC)*.c)
-OBJ = $(patsubst $(PREF_SRC)%.c, $(PREF_OBJ)%.o, $(SRC))
+EXECUTABLE = $(BUILD_DIR)/game
 
-all: prepare $(TARGET)
+all: prepare $(EXECUTABLE)
 
-$(TARGET) : $(OBJ)
-	$(CC) $(OBJ) -o $(TARGET)
-	
-$(PREF_OBJ)%.o : $(PREF_SRC)%.c
-	$(CC) -c $< -o $@
+$(EXECUTABLE): $(BUILD_DIR)/$(LIBRARY) $(MAIN_OBJ) 
+	$(CC) $(CFLAGS) -o $@ $^ -I $(SRC_DIR) -L $(BUILD_DIR) -lmatches
 
-run:
-	$(TARGET)
-	
-clean :
-	rm $(TARGET) $(PREF_OBJ)*.o
+$(BUILD_DIR)/$(LIBRARY): $(LIB_OBJ)
+	ar rcs $@ $^
+
+$(OBJ_DIR)/%.o: $(SRC_DIR)/lib/%.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
+	$(CC) $(CFLAGS) -c $< -o $@ -I $(SRC_DIR)
 
 prepare:
-	mkdir -p ./obj ./build
+	mkdir -p ./build ./obj
 
-.phony: all clean prepare
+run:
+	./$(EXECUTABLE)
+
+clean:
+	rm -f $(OBJ_DIR)/*.o $(LIBRARY) $(EXECUTABLE)
+
+.PHONY: clean run prepare
