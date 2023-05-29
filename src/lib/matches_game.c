@@ -1,5 +1,4 @@
 #include "matches_game.h"
-#include <stdio.h>
 
 void printDescription()
 {
@@ -7,6 +6,16 @@ void printDescription()
     printf("Выигрывает тот, кто берет последнюю спичку.\n");
     printf("\nДля возврата в меню нажмите любую клавишу...\n");
     getchar();
+}
+
+void changePlayer(int* playerNumber) 
+{
+    *playerNumber = (*playerNumber == 1) ? 2 : 1;
+}
+
+bool isInputCorrect(int *diff)
+{
+    return (*diff >= 1) && (*diff <= 10);
 }
 
 void playGame()
@@ -21,7 +30,7 @@ void playGame()
         printf("\nИгрок %d выбирает спички:\n", player);
         scanf("%d", &diff);
         
-        if (diff < 1 || diff > 10)
+        if (isInputCorrect(&diff) == false)
         {
             printf("Необходимо выбрать количество спичек в диапазоне от 1 до 10\n");
         }
@@ -35,7 +44,7 @@ void playGame()
                 printf("Игрок %d одержал победу!\n", player);
             }
             
-            player = (player == 1) ? 2 : 1;
+            changePlayer(&player);
         }
     } while (matchCount > 0);
     

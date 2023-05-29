@@ -13,6 +13,13 @@ MAIN_OBJ = $(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR)/%.o,$(MAIN_SRC))
 
 EXECUTABLE = $(BUILD_DIR)/game
 
+THIRDPARTY_DIR = thirdparty
+
+TEST_SRC_DIR = test
+TEST_OUT_NAME = matches-test
+TEST_OBJ_DIR = $(OBJ_DIR)/$(TEST_OUT_NAME)
+TEST_OBJECTS = $(TEST_OBJ_DIR)/ctest.o $(TEST_OBJ_DIR)/main.o
+
 all: prepare $(EXECUTABLE)
 
 $(EXECUTABLE): $(BUILD_DIR)/$(LIBRARY) $(MAIN_OBJ) 
@@ -27,13 +34,23 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/lib/%.c
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 	$(CC) $(CFLAGS) -c $< -o $@ -I $(SRC_DIR)
 
+# Test
+test: prepare $(BUILD_DIR)/$(LIBRARY) $(BUILD_DIR)/$(TEST_OUT_NAME)/$(TEST_OUT_NAME)
+	./$(BUILD_DIR)/$(TEST_OUT_NAME)/$(TEST_OUT_NAME)
+
+$(BUILD_DIR)/$(TEST_OUT_NAME)/$(TEST_OUT_NAME): $(TEST_OBJECTS)
+	$(CC) $(TEST_OBJECTS) -I$(THIRDPARTY_DIR) -Isrc -L$(BUILD_DIR) -lmatches -w -o $@
+
+$(TEST_OBJ_DIR)/%.o: $(TEST_SRC_DIR)/%.c
+	$(CC) -I$(THIRDPARTY_DIR) -Isrc -L$(BUILD_DIR) -lmatches -c $< -w -o $@
+
 prepare:
-	mkdir -p ./build ./obj
+	mkdir -p ./build ./build/matches-test ./obj ./obj/matches-test
 
 run:
 	./$(EXECUTABLE)
 
 clean:
-	rm -f $(OBJ_DIR)/*.o $(LIBRARY) $(EXECUTABLE)
+	rm -f -r $(OBJ_DIR)/*.o $(LIBRARY) $(EXECUTABLE) obj build
 
 .PHONY: clean run prepare
